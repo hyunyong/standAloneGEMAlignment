@@ -13,7 +13,6 @@ std::vector<double> mError = {0., 0., 0., 0.};
 
 TTree *tt;
 Float_t mResidual, mTrackX, mTrackY, mR;
-Int_t detID, mCharge;
 Long64_t mEvents;
 
 double MuonResidualsFitter_logPureGaussian(double residual, double center, double sigma) {
@@ -39,7 +38,6 @@ void MuonResiduals3DOFFitter_FCN(int &npar, double *gin, double &fval, double *p
     double residpeak = getResidual(dx, dy, dphiz, trackX, trackY, R);
     fval += -1.*MuonResidualsFitter_logPureGaussian(residual, residpeak, sig); 
   }
-  std::cout << detID <<", " << dx << ", " << fval << std::endl;
 }
 
 void doFit(bool doDx, bool doDy, bool doDphiz) {
@@ -119,8 +117,6 @@ int main() {
       tt->SetBranchAddress("prop_inner_localx_GE11", &mTrackX);
       tt->SetBranchAddress("prop_inner_localy_GE11", &mTrackY);
       tt->SetBranchAddress("prop_inner_r_GE11", &mR);
-      tt->SetBranchAddress("det_id", &detID);
-      tt->SetBranchAddress("muon_charge", &mCharge);
       mEvents = tt->GetEntries();
       doFit(doDx, doDy, doDphiz);
       dx = mResult[0];
