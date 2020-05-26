@@ -19,7 +19,7 @@ def MuonResiduals3DOFFitter_FCN(npar, gin, fval, par, iflag):
   dphiz = par[2]
   residsigma = par[3]
   for e in tt:
-    fval += MuonResidualsFitter_logPureGaussian(e.RdPhi_CSC_GE11, getResidual3DOF(dx, dy, dphiz, e.prop_CSC_localx_GE11, e.prop_CSC_r_GE11, e.prop_CSC_localy_GE11), residsigma)
+    fval += -1.*MuonResidualsFitter_logPureGaussian(e.RdPhi_CSC_GE11, getResidual3DOF(dx, dy, dphiz, e.prop_CSC_localx_GE11, e.prop_CSC_r_GE11, e.prop_CSC_localy_GE11), residsigma)
   return fval
 
 def getResidual3DOF(delta_x, delta_y, delta_phiz, track_x, R, track_y): 
