@@ -99,7 +99,7 @@ void doFit(bool doDx, bool doDy, bool doDphiz) {
 int main() {
   TFile *tf = new TFile("initial.root","READ");
   TTree *tmpTr = (TTree*)tf->Get("analyser/MuonData");
-  std::vector<int> nCutList = {15, 3, 2, 1 };
+  std::vector<int> nCutList = {30, 15, 8, 4, 2, 1};
   for (int nCut:nCutList) {
     std::ofstream myfile;
     myfile.open (Form("fitter%d.csv",nCut));  
