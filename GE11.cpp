@@ -97,34 +97,39 @@ void doFit(bool doDx, bool doDy, bool doDphiz) {
 }
 
 int main() {
-  std::ofstream myfile;
-  myfile.open ("fitter.csv");  
   TFile *tf = new TFile("initial.root","READ");
   TTree *tmpTr = (TTree*)tf->Get("analyser/MuonData");
-  double dx, dy, dz, dphix, dphiy, dphiz;
-  int detNum;
-  dz = 0.0; dphix = 0.0; dphiy = 0.0;
-  bool doDx = true;
-  bool doDy = true;
-  bool doDphiz = true;
-  for (int j = -1; j < 2; j = j + 2){
-    for (int i = 0; i<36;i++){
-      detNum = j*(i+101);
-      std::cout << "at chamber " << detNum << std::endl;
-      TFile* tmpTF = new TFile("tmp.root","recreate");
-      tt = tmpTr->CopyTree(Form("det_id==%d",detNum));
-      tt->SetBranchAddress("RdPhi_inner_GE11", &mResidual);
-      tt->SetBranchAddress("prop_inner_localx_GE11", &mTrackX);
-      tt->SetBranchAddress("prop_inner_localy_GE11", &mTrackY);
-      tt->SetBranchAddress("prop_inner_r_GE11", &mR);
-      mEvents = tt->GetEntries();
-      doFit(doDx, doDy, doDphiz);
-      dx = mResult[0];
-      dy = mResult[1];
-      dphiz = mResult[2];
-      myfile << detNum << ", " <<dx << ", " << dy << ", " << dz << ", " << dphix << ", " << dphiy << ", " << dphiz << ", " << mEvents << "\n";
+  std::vector<int> nCutList = {15, 3, 2, 1 };
+  for (int nCut:nCutList) {
+    std::ofstream myfile;
+    myfile.open (Form("fitter%d.csv",nCut));  
+    TFile* tmpTF = new TFile("tmp1.root","recreate");
+    TTree *cutEn = tmpTr->CopyTree(Form("Entry$%%%d==0",nCut));
+    double dx, dy, dz, dphix, dphiy, dphiz;
+    int detNum;
+    dz = 0.0; dphix = 0.0; dphiy = 0.0;
+    bool doDx = true;
+    bool doDy = true;
+    bool doDphiz = true;
+    for (int j = -1; j < 2; j = j + 2){
+      for (int i = 0; i<36;i++){
+        detNum = j*(i+101);
+        std::cout << "at chamber " << detNum << std::endl;
+        TFile* tmpTF = new TFile("tmp2.root","recreate");
+        tt = cutEn->CopyTree(Form("det_id==%d",detNum));
+        tt->SetBranchAddress("RdPhi_inner_GE11", &mResidual);
+        tt->SetBranchAddress("prop_inner_localx_GE11", &mTrackX);
+        tt->SetBranchAddress("prop_inner_localy_GE11", &mTrackY);
+        tt->SetBranchAddress("prop_inner_r_GE11", &mR);
+        mEvents = tt->GetEntries();
+        doFit(doDx, doDy, doDphiz);
+        dx = mResult[0];
+        dy = mResult[1];
+        dphiz = mResult[2];
+        myfile << detNum << ", " <<dx << ", " << dy << ", " << dz << ", " << dphix << ", " << dphiy << ", " << dphiz << ", " << mEvents << "\n";
+      }
     }
+    myfile.close();
   }
-  myfile.close();
   tf->Close(); 
 }
